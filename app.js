@@ -11,22 +11,14 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 function findUsers(start, limit) {
-  return new Promise((resolve, reject) => {
-    const collection = app.locals.collection;
-    collection.find().skip(start).limit(limit).toArray((err, res) => {
-      err ? reject(err) : resolve(res);
-    });
-  })
+  const collection = app.locals.collection;
+  return collection.find().skip(start).limit(limit).toArray()
 }
 
 
 function countUsers() {
-  return new Promise((resolve, reject) => {
-    const collection = app.locals.collection;
-    collection.find().count((err, res) => {
-      err ? reject(err) : resolve(res)
-    })
-  })
+  const collection = app.locals.collection;
+  return collection.find().count()
 }
 
 router.route("/users/count")
@@ -62,18 +54,17 @@ router.route("/users/:skip/:limit")
   })
 
 app.use(router);
-mongoClient.connect((err, client) => {
-  if (err) {
-    console.log(err);
-  }
-  else {
+mongoClient.connect()
+  .then(client => {
     dbClient = client;
     app.locals.collection = client.db("UserDB").collection("users");
     app.listen(9000, () => {
       console.log("Server is running on port 9000");
     });
-  }
-})
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 process.on("SIGINT", () => {
   dbClient.close();
   process.exit();
