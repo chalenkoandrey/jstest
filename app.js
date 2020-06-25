@@ -14,31 +14,33 @@ router.route("/users/count")
   .get((req, res) => {
     countUsers()
       .then(rez => {
-        res.json({ "count": rez })
-          .status(200)
-          .send()
+        res.status(200)
+          .json({ "count": rez })
       })
       .catch(err => {
-        res.json(err)
-          .status(500)
-          .send()
+        res.status(500)
+          .json(err)
       })
 
   })
 
 router.route("/users")
   .get((req, res) => {
-    findUsers(req.body.skip, req.body.limit)
-      .then(rez => {
-        res.json(rez)
-          .status(200)
-          .send()
-      })
-      .catch(err => {
-        res.json(err)
-          .status(500)
-          .send()
-      })
+    console.log(req.body.limit != 0)
+    if (req.body.limit != 0)
+      findUsers(req.body.skip, req.body.limit)
+        .then(rez => {
+          res.status(200)
+            .json(rez)
+        })
+        .catch(err => {
+          res.status(500)
+            .json(err)
+        })
+    else
+      res.status(500)
+        .json({ "error": "limit=0" })
+
   })
 
 function findUsers(start, limit) {
@@ -78,3 +80,4 @@ function countUsers() {
 app.listen(9000, () => {
   console.log("Server is running on port 9000");
 });
+module.exports = { app, findUsers, countUsers };
