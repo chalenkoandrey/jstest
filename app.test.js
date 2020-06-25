@@ -1,13 +1,18 @@
 const app = require('./app');
 
-test('find users 5 start from 2', () => {
-  return app.findUsers(2, 5).then(data => {
+test('find users 5 ', () => {
+  return app.findUsers(0, 5).then(data => {
     expect(Object.values(data).length).toBe(5)
   })
 })
-test('find without parameters', () => {
-  return app.findUsers().then(data => {
-    expect(Object.values(data).length).toBe(0)
+test('skip 1 get 2', () => {
+  return app.findUsers(1, 2).then(data => {
+    expect(Object.values(data).length).toBe(2)
+  })
+})
+test('skip 1 get 1', () => {
+  return app.findUsers(1, 1).then(data => {
+    expect(JSON.stringify(data[0]._id)).toMatch("5cee510cfda50d4b01b138f7")
   })
 })
 test('count users', () => {
